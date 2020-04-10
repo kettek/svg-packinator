@@ -1,10 +1,12 @@
 import { remote } from 'electron'
 import * as fs from 'fs'
+import beautify from 'xml-beautifier'
 
 class {
   onCreate() {
     this.state = {
       IDs: [],
+      rootElement: null,
       elements: [],
       liveElements: [],
       selectedElementIndex: 0,
@@ -13,10 +15,10 @@ class {
   }
   handleSVGRead(text) {
     const el = document.createElement('div')
-    el.innerHTML = text.replace(/^\s*/gm, '')
+    el.innerHTML = beautify(text.replace(/^\s*/gm, ''))
 
-    const svg = el.querySelector('svg')
-    this.state.elements = Array.prototype.filter.call(svg.children, child => {
+    this.state.rootElement = el.querySelector('svg')
+    this.state.elements = Array.prototype.filter.call(this.state.rootElement.children, child => {
       return child.tagName == 'g' || child.tagName == 'path' || child.tagName == 'symbol'
     })
 
@@ -49,8 +51,8 @@ class {
     if (toIndex < 0) toIndex = 0
     if (toIndex >= this.state.elements.length) toIndex = this.state.elements.length-1
 
-
     let el = this.state.elements[fromIndex]
+    this.state.rootElement.insertBefore(el, this.state.elements[toIndex])
     if (toIndex > fromIndex) {
       this.state.elements.splice(fromIndex, 1)
       this.state.elements.splice(toIndex-1, 0, el)
@@ -148,6 +150,11 @@ style {
     background: #222;
     overflow: auto;
   }
+  .Export {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+  }
 }
 
 div.Content
@@ -167,4 +174,6 @@ div.Content
     for|element, elementIndex| of=state.elements
       PackedIcons__Item element=element elementIndex=elementIndex selected=elementIndex===state.selectedElementIndex currentColor=state.currentColor on-select('selectElement', elementIndex) on-swap('swapElements')
   div.Export
-    span -- eggs
+    $ let output = state.elements.map(el=>el.outerHTML).join('\n')
+    if(state.rootElement)
+      textarea readonly -- ${beautify(`<?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">${state.rootElement.outerHTML}`)}
