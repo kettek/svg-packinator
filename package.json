@@ -1,0 +1,45 @@
+{
+    "name": "svg-packinator",
+    "productName": "svg-packinator",
+    "version": "0.0.0",
+    "description": "GUI tool for packing multiple SVGs into a single SVG",
+    "main": "build/index.js",
+    "scripts": {
+        "start": "gulp start",
+        "build": "gulp build",
+        "watch-and-start": "gulp watch-and-start",
+        "release": "gulp release",
+        "dist-linux": "gulp build-dist-linux",
+        "dist-windows": "gulp build-dist-windows",
+        "dist-mac": "gulp build-dist-mac"
+    },
+    "devDependencies": {
+        "chokidar": "^3.3.1",
+        "css-loader": "^3.4.2",
+        "electron": "^8.2.0",
+        "electron-reload": "^1.5.0",
+        "gulp": "^4.0.2",
+        "gulp-clean-css": "^4.3.0",
+        "gulp-concat": "^2.6.1",
+        "gulp-css": "^0.1.0",
+        "gulp-shell": "^0.8.0",
+        "gulp-uglify": "^3.0.2",
+        "marko": "^4.19.8",
+        "marko-loader": "^1.5.0",
+        "node-loader": "^0.6.0",
+        "rollup-plugin-cleanup": "^3.1.1",
+        "style-loader": "^1.1.3",
+        "webpack": "^4.42.1",
+        "webpack-cli": "^3.3.11"
+    },
+    "build": {
+        "icon": {
+            "mac": "build/assets/icons/icon.icns",
+            "windows": "build/assets/icons/icon.ico",
+            "linux": "build/assets/icons/icon.png"
+        }
+    },
+    "dependencies": {
+        "ico-endec": "^0.1.4"
+    }
+}

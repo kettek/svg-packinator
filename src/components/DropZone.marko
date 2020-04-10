@@ -1,0 +1,54 @@
+class {
+  readFile(file) {
+    const reader = new FileReader()
+    reader.addEventListener('load', e => {
+      this.emit('readText', reader.result)
+    })
+    reader.readAsText(file)
+  }
+  handleClick(e) {
+    const inp = document.createElement('input')
+    inp.type = 'file'
+    inp.accept = 'image/svg+xml'
+    inp.addEventListener('input', e => {
+      for (let i = 0; i < e.target.files.length; i++) {
+        this.readFile(e.target.files[i])
+      }
+    })
+    inp.click()
+  }
+  handleRightClick(e) {
+    e.preventDefault()
+    this.emit('clearimage', this.input.name)
+  }
+  handleDrop(e) {
+    e.preventDefault()
+    for (let i = 0; i < e.dataTransfer.items.length; i++) {
+      if (e.dataTransfer.items[i].kind === 'file' && e.dataTransfer.items[i].type.match(/^image\/svg\+xml/)) {
+        this.readFile(e.dataTransfer.items[i].getAsFile())
+      }
+    }
+  }
+  handleDragover(e) {
+    e.preventDefault()
+  }
+  onInput(inp) {
+    this.forceUpdate()
+  }
+}
+
+style {
+  .DropZone {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #aaa;
+      font-weight: bold;
+      font-family: sans-serif;
+  }
+}
+
+div.DropZone on-dragover('handleDragover') on-drop('handleDrop') on-click('handleClick') on-contextmenu('handleRightClick')
+  span draggable=false -- drop or select a packed SVG

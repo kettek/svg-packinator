@@ -1,0 +1,178 @@
+import { remote } from 'electron'
+import * as fs from 'fs'
+
+class {
+  onCreate() {
+    this.state = {
+      IDs: [],
+      elements: [],
+      liveElements: [],
+      selectedElementIndex: 0,
+      currentColor: '',
+    }
+  }
+  handleSVGRead(text) {
+    const el = document.createElement('div')
+    el.innerHTML = text
+
+    const svg = el.querySelector('svg')
+    this.state.elements = Array.prototype.filter.call(svg.children, child => {
+      return child.tagName == 'g' || child.tagName == 'path' || child.tagName == 'symbol'
+    })
+
+    this.forceUpdate()
+    this.update()
+  }
+  onUpdate() {
+    /*this.state.elements.forEach(el => {
+      const targetEl = this.getEl('id_'+el.id)
+
+      const targetChildren = el.children
+
+      if (targetChildren.length) targetEl.innerHTML = ''
+      for (let i = 0; i < targetChildren.length; i++) {
+        //let cloned = targetChildren[i].cloneNode(true)
+        targetEl.appendChild(targetChildren[i])
+        //this.state.liveElements[i] = cloned
+      }
+    })*/
+  }
+  changeElementID(elementIndex, e) {
+    this.state.elements[elementIndex].id = e.target.value
+    this.forceUpdate()
+  }
+  changeElementText(elementIndex, e) {
+    this.state.elements[elementIndex].innerHTML = e.target.value
+    this.forceUpdate()
+  }
+  selectElement(elementIndex) {
+    this.state.selectedElementIndex = elementIndex
+  }
+  changeCurrentColor(e) {
+    this.state.currentColor = e.target.value
+  }
+}
+
+style {
+  :root {
+    --primary: #51789d;
+    --secondary: #0c1a13;
+    --tertiary: #667e94;
+    --quaternary: #f3e5ec;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    background-color: black;
+    color: var(--secondary);
+    margin: 0;
+  }
+  [draggable] {
+    user-select: none;
+  }
+  .Content {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 4fr) minmax(0, 1fr);
+    height: 100vh;
+    width: 100vw;
+    font-size: 1.5vmin;
+  }
+  .Info {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) minmax(0, 3fr);
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .SVGInfo {
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .SVGInfo__Title {
+    background: #aaa;
+    padding: .5em;
+    text-align: center;
+    font-family: sans-serif;
+    font-weight: bold;
+  }
+  .SVGInfo__Settings__Item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 4fr) auto;
+    grid-template-rows: minmax(0, 1fr);
+    font-family: sans-serif;
+  }
+  .SVGInfo__Settings__Item__Label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    font-weight: bold;
+    padding: .25em;
+    font-size: 125%;
+  }
+  .SVGInfo__Settings__Item__Input {
+    padding: .25em;
+    font-size: 125%;
+  }
+  .SVGInfo__Settings__Item__Info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 175%;
+    color: #3366cc;
+    padding: .25em;
+  }
+  .SVGInfo__Editor {
+  }
+  .PackedIcons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    background: #222;
+    overflow: auto;
+  }
+  .PackedIcons__Item {
+    padding: 1em;
+    margin: 1em;
+    background: #444;
+    box-shadow: .25em .25em #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 20vmin;
+  }
+  .PackedIcons__Item.-selected {
+    background: #aaa;
+  }
+  .PackedIcons__Item__Title {
+    font-weight: bold;
+    font-family: sans-serif;
+    text-align: center;
+  }
+  .PackedIcons__Item__Image {
+    background: #777;
+  }
+}
+
+div.Content
+  div.Info
+    DropZone on-readText('handleSVGRead')
+    div.SVGInfo
+      div.SVGInfo__Settings
+        label.SVGInfo__Settings__Item
+          label.SVGInfo__Settings__Item__Label -- color
+          input.SVGInfo__Settings__Item__Input on-change('changeCurrentColor') value=state.currentColor placeholder='#ffffff'
+          label.SVGInfo__Settings__Item__Info title="If an SVG element has fill or stroke set to \"currentColor\", it will inherit from this field" -- 🛈
+      if(state.selectedElementIndex>=0&&state.selectedElementIndex<state.elements.length)
+        $ const el = state.elements[state.selectedElementIndex]
+        input.SVGInfo__Title on-change('changeElementID', state.selectedElementIndex) value=el.id
+        textarea.SVGInfo__Editor on-change('changeElementText', state.selectedElementIndex) -- ${el.innerHTML}
+  div.PackedIcons
+    for|element, elementIndex| of=state.elements
+      div.PackedIcons__Item class={'-selected': elementIndex===state.selectedElementIndex} on-click('selectElement', elementIndex)
+        $ //svg.PackedIcons__Item__Image viewBox=element.attributes.viewBox.value key='id_'+element.id
+        svg.PackedIcons__Item__Image style={'color': state.currentColor} viewBox=element.attributes.viewBox.value key='id_'+element.id -- $!{element.innerHTML}
+        div.PackedIcons__Item__Title -- ${element.id}
+  div.Export
+    span -- eggs
