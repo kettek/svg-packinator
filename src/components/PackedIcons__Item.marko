@@ -1,0 +1,114 @@
+class {
+  onCreate() {
+    this.state = {
+      dropTarget: ''
+    }
+  }
+  onMount() {
+  }
+  handleDragstart(e) {
+    e.stopPropagation()
+    e.dataTransfer.effectAllowed = 'move'
+    e.dataTransfer.setData('fromIndex', this.input.elementIndex)
+  }
+  handleDragexit(e) {
+    e.stopPropagation()
+    this.state.dropTarget = ''
+  }
+  handleDragover(e) {
+    e.preventDefault()
+    e.stopPropagation()
+
+    let [x, y, w, h] = this.getRelativeMouseCoords(e)
+    let hw = w / 2
+    if (x < w/2) {
+      this.state.dropTarget = 'left'
+    } else if (x > w - w/2) {
+      this.state.dropTarget = 'right'
+    }
+  }
+  handleDrop(e) {
+    e.preventDefault()
+    e.stopPropagation()
+    const fromIndex = e.dataTransfer.getData('fromIndex')
+    let toIndex = this.input.elementIndex
+    if (this.state.dropTarget === 'right') {
+      toIndex++
+    }
+    if (fromIndex !== undefined) {
+      this.emit('swap', {
+        fromIndex: fromIndex,
+        toIndex: toIndex,
+      })
+    }
+    this.state.dropTarget = ''
+  }
+  handleClick(e) {
+    this.emit('select')
+  }
+  onInput() {
+    console.log(this.input)
+    if (!this.input) return
+    console.log(this)
+    this.forceUpdate()
+    this.update()
+  }
+  getRelativeMouseCoords(e) {
+    let rootView = this.getEl('item')
+    let rootBox = rootView.getBoundingClientRect()
+    return [e.clientX - rootBox.left, e.clientY - rootBox.top, rootBox.width, rootBox.height]
+  }
+}
+
+style {
+  .PackedIcons__Item {
+    position: relative;
+    padding: 1em;
+    margin: 1em;
+    background: #444;
+    box-shadow: .25em .25em #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 20vmin;
+  }
+  .PackedIcons__Item.-selected {
+    background: #aaa;
+  }
+  .PackedIcons__Item::after {
+    content: ' ';
+    display: none;
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    background: rgba(200, 200, 200, 0.5);
+  }
+  .PackedIcons__Item.-left::after {
+    display: block;
+    left: 0;
+  }
+  .PackedIcons__Item.-right::after {
+    display: block;
+    left: 50%;
+  }
+  .PackedIcons__Item > * {
+    pointer-events: none;
+  }
+  .PackedIcons__Item__Title {
+    font-weight: bold;
+    font-family: sans-serif;
+    text-align: center;
+    color: #000;
+    font-size: 150%;
+    user-select: none;
+  }
+  .PackedIcons__Item__Image {
+    background: #777;
+    user-select: none;
+  }
+}
+
+div.PackedIcons__Item key='item' draggable="true" class={'-selected': input.selected, '-left': state.dropTarget==='left', '-right': state.dropTarget==='right'} on-dragleave('handleDragexit') on-dragstart('handleDragstart') on-dragover('handleDragover') on-drop('handleDrop') on-click('handleClick')
+  svg.PackedIcons__Item__Image style={'color': input.currentColor} viewBox=input.element.attributes.viewBox.value key='id_'+input.element.id -- $!{input.element.innerHTML}
+  div.PackedIcons__Item__Title -- ${input.element.id}

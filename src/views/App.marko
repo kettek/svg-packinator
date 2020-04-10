@@ -45,6 +45,21 @@ class {
     this.state.elements[elementIndex].innerHTML = e.target.value
     this.forceUpdate()
   }
+  swapElements({fromIndex, toIndex, target}) {
+    if (toIndex < 0) toIndex = 0
+    if (toIndex >= this.state.elements.length) toIndex = this.state.elements.length-1
+
+    let el = this.state.elements[fromIndex]
+    if (toIndex > fromIndex) {
+      this.state.elements.splice(fromIndex, 1)
+      this.state.elements.splice(toIndex-1, 0, el)
+    } else if (toIndex < fromIndex) {
+      this.state.elements.splice(fromIndex, 1)
+      this.state.elements.splice(toIndex, 0, el)
+    }
+
+    this.forceUpdate()
+  }
   selectElement(elementIndex) {
     this.state.selectedElementIndex = elementIndex
   }
@@ -132,27 +147,6 @@ style {
     background: #222;
     overflow: auto;
   }
-  .PackedIcons__Item {
-    padding: 1em;
-    margin: 1em;
-    background: #444;
-    box-shadow: .25em .25em #000;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 20vmin;
-  }
-  .PackedIcons__Item.-selected {
-    background: #aaa;
-  }
-  .PackedIcons__Item__Title {
-    font-weight: bold;
-    font-family: sans-serif;
-    text-align: center;
-  }
-  .PackedIcons__Item__Image {
-    background: #777;
-  }
 }
 
 div.Content
@@ -170,9 +164,6 @@ div.Content
         textarea.SVGInfo__Editor on-change('changeElementText', state.selectedElementIndex) -- ${el.innerHTML}
   div.PackedIcons
     for|element, elementIndex| of=state.elements
-      div.PackedIcons__Item class={'-selected': elementIndex===state.selectedElementIndex} on-click('selectElement', elementIndex)
-        $ //svg.PackedIcons__Item__Image viewBox=element.attributes.viewBox.value key='id_'+element.id
-        svg.PackedIcons__Item__Image style={'color': state.currentColor} viewBox=element.attributes.viewBox.value key='id_'+element.id -- $!{element.innerHTML}
-        div.PackedIcons__Item__Title -- ${element.id}
+      PackedIcons__Item element=element elementIndex=elementIndex selected=elementIndex===state.selectedElementIndex currentColor=state.currentColor on-select('selectElement', elementIndex) on-swap('swapElements')
   div.Export
     span -- eggs
