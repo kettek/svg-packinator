@@ -13,7 +13,7 @@ class {
   }
   handleSVGRead(text) {
     const el = document.createElement('div')
-    el.innerHTML = text
+    el.innerHTML = text.replace(/^\s*/gm, '')
 
     const svg = el.querySelector('svg')
     this.state.elements = Array.prototype.filter.call(svg.children, child => {
@@ -48,6 +48,7 @@ class {
   swapElements({fromIndex, toIndex, target}) {
     if (toIndex < 0) toIndex = 0
     if (toIndex >= this.state.elements.length) toIndex = this.state.elements.length-1
+
 
     let el = this.state.elements[fromIndex]
     if (toIndex > fromIndex) {
