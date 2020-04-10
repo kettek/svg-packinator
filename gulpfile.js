@@ -4,20 +4,8 @@
 var fs = require('fs')
 var gulp = require('gulp')
 var concat = require('gulp-concat')
-var cleanCSS = require('gulp-clean-css')
 const shell = require('gulp-shell')
 var uglify = require('gulp-uglify')
-
-/**
- * Concatenate, minify and copy Css
- * src/css/* -> build/css/style.min.css
- */
-gulp.task('copy-css', () => {
-	return gulp.src('src/css/*')
-		.pipe(concat('style.min.css'))
-		.pipe(cleanCSS())
-		.pipe(gulp.dest('build/css/'))
-})
 
 /**
  * Compile and bundle Marko files
@@ -76,7 +64,7 @@ gulp.task('compile', gulp.parallel('compile-marko'))
 /**
  * Ecex copy tasks
  */
-gulp.task('copy', gulp.parallel('copy-css', 'copy-js', 'copy-electron-js', 'copy-html', 'copy-assets'))
+gulp.task('copy', gulp.parallel('copy-js', 'copy-electron-js', 'copy-html', 'copy-assets'))
 
 /**
  * Compile App to /build
@@ -114,7 +102,7 @@ if (process.platform === 'win32') {
 //gulp.task('release', gulp.series('build', 'set-env:production', gulp.parallel('package-mac', 'package-windows', 'package-linux'), 'set-env:development'))
 
 /**
- * Add watch task for Sass/Scss, Jsx and Js Files
+ * Add watch task for marko, html, and js files
  */
 gulp.task('watch', done => {
 	gulp.watch('src/assets/**/*', gulp.series('copy-assets'))
@@ -122,7 +110,6 @@ gulp.task('watch', done => {
 	gulp.watch('src/views/**/*', gulp.series('compile-marko'))
 	gulp.watch('src/models/**/*', gulp.series('compile-marko'))
 	gulp.watch('src/schemata/**/*', gulp.series('compile-marko'))
-	gulp.watch('src/css/*.css', gulp.series('copy-css'))
 	gulp.watch('src/js/**/*.js', gulp.series('compile-marko'))
 	gulp.watch('src/*.html', gulp.series('copy-html'))
 	gulp.watch('src/*.js', gulp.series('copy-electron-js'))
