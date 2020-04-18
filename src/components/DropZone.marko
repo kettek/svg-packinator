@@ -2,7 +2,7 @@ class {
   readFile(file) {
     const reader = new FileReader()
     reader.addEventListener('load', e => {
-      this.emit('readText', reader.result)
+      this.emit('readText', reader.result, file.path)
     })
     reader.readAsText(file)
   }

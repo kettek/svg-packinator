@@ -11,12 +11,14 @@ class {
       liveElements: [],
       selectedElementIndex: 0,
       currentColor: '',
+      filePath: '',
     }
   }
-  handleSVGRead(text) {
+  handleSVGRead(text, filePath) {
     const el = document.createElement('div')
     el.innerHTML = beautify(text.replace(/^\s*/gm, ''))
 
+    this.state.filePath = filePath
     this.state.rootElement = el.querySelector('svg')
     this.state.elements = Array.prototype.filter.call(this.state.rootElement.children, child => {
       return child.tagName == 'g' || child.tagName == 'path' || child.tagName == 'symbol'
@@ -153,7 +155,17 @@ style {
   .Export {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+  .Export__Buttons {
+  }
+  .Export__Buttons__Item {
+    color: #aaa;
+    padding: .5em;
+    font-weight: bold;
+    font-family: sans-serif;
+    text-align: center;
+    font-size: 100%;
   }
 }
 
@@ -177,3 +189,6 @@ div.Content
     $ let output = state.elements.map(el=>el.outerHTML).join('\n')
     if(state.rootElement)
       textarea readonly -- ${beautify(`<?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">${state.rootElement.outerHTML}`)}
+    div.Export__Buttons
+      div.Export__Buttons__Item -- overwite
+      div.Export__Buttons__Item -- save as
