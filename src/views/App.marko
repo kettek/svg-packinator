@@ -184,7 +184,7 @@ div.Content
         textarea.SVGInfo__Editor on-change('changeElementText', state.selectedElementIndex) -- ${el.innerHTML}
   div.PackedIcons
     for|element, elementIndex| of=state.elements
-      PackedIcons__Item element=element elementIndex=elementIndex selected=elementIndex===state.selectedElementIndex currentColor=state.currentColor on-select('selectElement', elementIndex) on-swap('swapElements')
+      PackedIcons__Item element=element elementIndex=elementIndex innerHTML=element.innerHTML selected=elementIndex===state.selectedElementIndex currentColor=state.currentColor on-select('selectElement', elementIndex) on-swap('swapElements')
   div.Export
     $ let output = state.elements.map(el=>el.outerHTML).join('\n')
     if(state.rootElement)

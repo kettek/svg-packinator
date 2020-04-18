@@ -129,7 +129,7 @@ style {
 }
 
 div.PackedIcons__Item key='item' draggable="true" class={'-selected': input.selected, '-left': state.dropTarget==='left', '-right': state.dropTarget==='right'} on-dragleave('handleDragexit') on-dragstart('handleDragstart') on-dragover('handleDragover') on-drop('handleDrop') on-click('handleClick')
-  svg.PackedIcons__Item__Image style={'color': input.currentColor} viewBox=input.element.attributes.viewBox.value key='id_'+input.element.id -- $!{input.element.innerHTML}
+  svg.PackedIcons__Item__Image style={'color': input.currentColor} viewBox=input.element.attributes.viewBox.value key='id_'+input.element.id -- $!{input.innerHTML}
   div.PackedIcons__Item__Title -- ${input.element.id}
     $ let childInfo = { infos: [], warnings: [] }
     $ let infos = Array.prototype.forEach.call(input.element.children, child => {
