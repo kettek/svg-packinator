@@ -45,8 +45,8 @@ class {
     this.state.elements[elementIndex].id = e.target.value
     this.forceUpdate()
   }
-  changeElementText(elementIndex, e) {
-    this.state.elements[elementIndex].innerHTML = e.target.value
+  changeElementText(e) {
+    this.state.elements[this.state.selectedElementIndex].innerHTML = this.getEl('SVGInfo__Editor').value
     this.forceUpdate()
   }
   swapElements({fromIndex, toIndex, target}) {
@@ -181,7 +181,8 @@ div.Content
       if(state.selectedElementIndex>=0&&state.selectedElementIndex<state.elements.length)
         $ const el = state.elements[state.selectedElementIndex]
         input.SVGInfo__Title on-change('changeElementID', state.selectedElementIndex) value=el.id
-        textarea.SVGInfo__Editor on-change('changeElementText', state.selectedElementIndex) -- ${el.innerHTML}
+        textarea.SVGInfo__Editor key='SVGInfo__Editor' -- ${el.innerHTML}
+        button.SVGInfo__Submit on-click('changeElementText') -- change element
   div.PackedIcons
     for|element, elementIndex| of=state.elements
       PackedIcons__Item element=element elementIndex=elementIndex innerHTML=element.innerHTML selected=elementIndex===state.selectedElementIndex currentColor=state.currentColor on-select('selectElement', elementIndex) on-swap('swapElements')
