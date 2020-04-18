@@ -107,8 +107,44 @@ style {
     background: #777;
     user-select: none;
   }
+  .PackedIcons__Item__Info {
+    pointer-events: auto;
+    font-weight: normal;
+    color: #3366cc;
+    margin-left: .25em;
+    text-shadow: 0 0 .1em black;
+  }
+  .PackedIcons__Item__Warning {
+    pointer-events: auto;
+    font-weight: normal;
+    color: #cccc66;
+    margin-left: .25em;
+    text-shadow: 0 0 .1em black;
+  }
 }
 
 div.PackedIcons__Item key='item' draggable="true" class={'-selected': input.selected, '-left': state.dropTarget==='left', '-right': state.dropTarget==='right'} on-dragleave('handleDragexit') on-dragstart('handleDragstart') on-dragover('handleDragover') on-drop('handleDrop') on-click('handleClick')
   svg.PackedIcons__Item__Image style={'color': input.currentColor} viewBox=input.element.attributes.viewBox.value key='id_'+input.element.id -- $!{input.element.innerHTML}
   div.PackedIcons__Item__Title -- ${input.element.id}
+    $ let childInfo = { infos: [], warnings: [] }
+    $ let infos = Array.prototype.forEach.call(input.element.children, child => {
+      if (child.hasAttribute('fill') && child.getAttribute('fill') !== 'currentColor' && child.getAttribute('fill') !== 'none') {
+        childInfo.infos.push(`A ${child.tagName} element has the fill property and it is not set to currentColor or none.`)
+      }
+      if (child.style.fill !== '' && child.style.fill !== 'currentcolor' && child.style.fill !== 'none') {
+        childInfo.infos.push(`A ${child.tagName} element has a fill style and it is not set to currentColor or none.`)
+      }
+      if (child.hasAttribute('stroke') && child.getAttribute('stroke') !== 'currentColor' && child.getAttribute('stroke') !== 'none') {
+        childInfo.infos.push(`A ${child.tagName} element has the stroke property and it is not set to currentColor or none.`)
+      }
+      if (child.style.stroke !== '' && child.style.stroke !== 'currentcolor' && child.style.stroke !== 'none') {
+        childInfo.infos.push(`A ${child.tagName} element has a stroke style and it is not set to currentColor or none.`)
+      }
+      if (child.style.display === 'none') {
+        childInfo.warnings.push(`A ${child.tagName} element has display set to none.`)
+      }
+    })
+    if(childInfo.warnings.length > 0)
+      label.PackedIcons__Item__Warning title=childInfo.warnings.join('\n') -- ⚠
+    if(childInfo.infos.length > 0)
+      label.PackedIcons__Item__Info title=childInfo.infos.join('\n') -- 🛈
