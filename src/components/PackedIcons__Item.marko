@@ -107,19 +107,24 @@ style {
     background: #777;
     user-select: none;
   }
+  .PackedIcons__Item__Infos {
+    position: absolute;
+    top: 0;
+    right: .1em;
+    font-size: 125%;
+    text-shadow: 0 0 .1em black;
+  }
   .PackedIcons__Item__Info {
+    display: block;
     pointer-events: auto;
     font-weight: normal;
     color: #3366cc;
-    margin-left: .25em;
-    text-shadow: 0 0 .1em black;
   }
   .PackedIcons__Item__Warning {
+    display: block;
     pointer-events: auto;
     font-weight: normal;
     color: #cccc66;
-    margin-left: .25em;
-    text-shadow: 0 0 .1em black;
   }
 }
 
@@ -144,7 +149,8 @@ div.PackedIcons__Item key='item' draggable="true" class={'-selected': input.sele
         childInfo.warnings.push(`A ${child.tagName} element has display set to none.`)
       }
     })
-    if(childInfo.warnings.length > 0)
-      label.PackedIcons__Item__Warning title=childInfo.warnings.join('\n') -- ⚠
-    if(childInfo.infos.length > 0)
-      label.PackedIcons__Item__Info title=childInfo.infos.join('\n') -- 🛈
+    label.PackedIcons__Item__Infos
+      if(childInfo.infos.length > 0)
+        label.PackedIcons__Item__Info title=childInfo.infos.join('\n') -- 🛈
+      if(childInfo.warnings.length > 0)
+        label.PackedIcons__Item__Warning title=childInfo.warnings.join('\n') -- ⚠
