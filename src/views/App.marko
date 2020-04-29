@@ -71,6 +71,25 @@ class {
   changeCurrentColor(e) {
     this.state.currentColor = e.target.value
   }
+  handleSave(saveAs) {
+    let targetPath = this.state.filePath
+
+    if (saveAs) {
+      let targetPath = remote.dialog.showSaveDialogSync({
+        title: 'Save SVG to...',
+        defaultPath: this.state.filePath,
+        filters: [
+          {
+            name: 'SVG',
+            extensions: ['svg']
+          }
+        ],
+        message: 'Save SVG to...',
+      })
+    }
+
+    console.log('TODO: save svg contents to', targetPath)
+  }
 }
 
 style {
@@ -191,5 +210,5 @@ div.Content
     if(state.rootElement)
       textarea readonly -- ${beautify(`<?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">${state.rootElement.outerHTML}`)}
     div.Export__Buttons
-      div.Export__Buttons__Item -- overwite
-      div.Export__Buttons__Item -- save as
+      div.Export__Buttons__Item on-click('handleSave', false) -- overwite
+      div.Export__Buttons__Item on-click('handleSave', true) -- save as
