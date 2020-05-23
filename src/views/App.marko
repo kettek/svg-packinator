@@ -84,7 +84,7 @@ class {
   changeCurrentColor(e) {
     this.state.currentColor = e.target.value
   }
-  handleSave(saveAs) {
+  async handleSave(saveAs) {
     let targetPath = this.state.filePath
 
     if (saveAs) {
@@ -99,9 +99,25 @@ class {
         ],
         message: 'Save SVG to...',
       })
+      if (!targetPath) {
+        return
+      }
+    } else {
+      let result = remote.dialog.showMessageBoxSync({
+        type: 'warning',
+        buttons: ['cancel', 'OK'],
+        defaultId: 1,
+        title: `Overwrite ${targetPath}?`,
+        detail: `${targetPath} will be overwritten, do you wish to proceed?`,
+      })
+      if (result !== 1) {
+        return
+      }
     }
 
-    console.log('TODO: save svg contents to', targetPath)
+    let outputSVG = beautify(`<?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">${this.state.rootElement.outerHTML}`)
+
+    await fs.writeFileSync(targetPath, outputSVG)
   }
 }
 
@@ -203,6 +219,10 @@ style {
     text-align: center;
     font-size: 100%;
   }
+  .Export__Buttons__Item.-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
 }
 
 div.Content
@@ -231,7 +251,7 @@ div.Content
     if(state.rootElement)
       textarea readonly -- ${beautify(`<?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">${state.rootElement.outerHTML}`)}
     div.Export__Buttons
-      div.Export__Buttons__Item on-click('handleSave', false) -- overwite
+      div.Export__Buttons__Item class={'-disabled': state.filePath===''} on-click('handleSave', false) -- overwite
       div.Export__Buttons__Item on-click('handleSave', true) -- save as
   if(state.showNewIconDialog)
     ImportDialog element=state.importElement on-close('toggleNewIconDialog')
