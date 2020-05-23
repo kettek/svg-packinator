@@ -7,11 +7,13 @@ class {
     this.state = {
       IDs: [],
       rootElement: null,
+      importElement: null,
       elements: [],
       liveElements: [],
       selectedElementIndex: 0,
       currentColor: '',
       filePath: '',
+      showNewIconDialog: false,
     }
   }
   handleSVGRead(text, filePath) {
@@ -26,6 +28,14 @@ class {
 
     this.forceUpdate()
     this.update()
+  }
+  handleImportSVGRead(text, filePath) {
+    const el = document.createElement('div')
+    el.innerHTML = beautify(text.replace(/^\s*/gm, ''))
+
+    this.state.importElement = el.querySelector('svg')
+
+    this.toggleNewIconDialog()
   }
   onUpdate() {
     /*this.state.elements.forEach(el => {
@@ -67,6 +77,9 @@ class {
   }
   selectElement(elementIndex) {
     this.state.selectedElementIndex = elementIndex
+  }
+  toggleNewIconDialog() {
+    this.state.showNewIconDialog = !this.state.showNewIconDialog
   }
   changeCurrentColor(e) {
     this.state.currentColor = e.target.value
@@ -113,9 +126,12 @@ style {
   .Content {
     display: grid;
     grid-template-rows: minmax(0, 1fr);
-    grid-template-columns: minmax(0, 1fr) minmax(0, 4fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 3fr) minmax(0, 1fr);
     height: 100vh;
     width: 100vw;
+    font-size: 1.5vmin;
+  }
+  textarea {
     font-size: 1.5vmin;
   }
   .Info {
@@ -168,6 +184,7 @@ style {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    align-items: flex-start;
     background: #222;
     overflow: auto;
   }
@@ -191,6 +208,7 @@ style {
 div.Content
   div.Info
     DropZone on-readText('handleSVGRead')
+      span draggable=false -- drop or select a packed SVG
     div.SVGInfo
       div.SVGInfo__Settings
         label.SVGInfo__Settings__Item
@@ -205,6 +223,9 @@ div.Content
   div.PackedIcons
     for|element, elementIndex| of=state.elements
       PackedIcons__Item element=element elementIndex=elementIndex innerHTML=element.innerHTML selected=elementIndex===state.selectedElementIndex currentColor=state.currentColor on-select('selectElement', elementIndex) on-swap('swapElements')
+    DropZone on-readText('handleImportSVGRead')
+      div.PackedIcons__Item.-new
+        span draggable=false -- drop or select SVG icon
   div.Export
     $ let output = state.elements.map(el=>el.outerHTML).join('\n')
     if(state.rootElement)
@@ -212,3 +233,5 @@ div.Content
     div.Export__Buttons
       div.Export__Buttons__Item on-click('handleSave', false) -- overwite
       div.Export__Buttons__Item on-click('handleSave', true) -- save as
+  if(state.showNewIconDialog)
+    ImportDialog element=state.importElement on-close('toggleNewIconDialog')

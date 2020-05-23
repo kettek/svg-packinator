@@ -1,0 +1,54 @@
+class {
+  onCreate(input) {
+    this.state = {
+      element: input.element
+    }
+    this.handleKeyup = this.handleKeyup.bind(this)
+  }
+  onMount() {
+    window.addEventListener('keyup', this.handleKeyup)
+  }
+  onDestroy() {
+    window.removeEventListener('keyup', this.handleKeyup)
+  }
+  handleKeyup(e) {
+    if (e.code === 'Escape') {
+      this.emit('close')
+    }
+  }
+}
+
+style {
+  .importDialog {
+    position: absolute;
+    left: 0; top: 0;
+    width: 100vw; height: 100vh;
+    padding: 10vw 10vh;
+    z-index: 100;
+    display: flex;
+    background: rgba(0, 0, 0, 0.5)
+  }
+  .importDialog__content {
+    flex: 1;
+    background: #222;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 3fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+  }
+  .importDialog__content__export {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+}
+
+div.importDialog
+  div.importDialog__content
+    div.importDialog__content__import
+      svg viewBox=input.element.attributes.viewBox.value -- $!{input.element.innerHTML}
+      div -- stuff
+    div.importDialog__content__preview
+      div -- preview
+    div.importDialog__content__export
+      textarea.SVGInfo__Editor -- ${state.element.innerHTML}
+      button -- add
